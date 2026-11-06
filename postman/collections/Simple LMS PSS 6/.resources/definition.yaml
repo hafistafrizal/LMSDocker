@@ -1,1 +1,32 @@
 $kind: collection
+description: |-
+  # Dokumentasi & Pengujian REST API - Simple LMS PSS 6
+
+  Collection Postman ini digunakan untuk menguji seluruh endpoint REST API pada entitas `Course` dalam proyek **Simple LMS** (Praktikum 6 / UTS Pemrograman Sisi Server). API ini dibangun menggunakan **Django 5.2**, **Django Ninja**, dan basis data **PostgreSQL 17** di lingkungan **Docker Compose**.
+
+  ---
+
+  ## 🚀 Konfigurasi Lingkungan (Environment)
+  * **Base URL:** `http://localhost:8000`
+  * **Dokumentasi OpenAPI (Swagger UI):** `http://localhost:8000/api/docs`
+  * **Health Check:** `http://localhost:8000/api/health`
+
+  ---
+
+  ## 📋 Cakupan Kontrak API & Kasus Uji
+
+  ### 1. Operasi Utama (CRUD Course)
+  * **GET `/api/courses`** — Menampilkan daftar seluruh Course (dukungan filter judul `q` dan status `published`).
+  * **POST `/api/courses`** — Menambahkan data Course baru (membutuhkan `teacher_id` valid).
+  * **GET `/api/courses/{id}`** — Menampilkan detail Course berdasarkan ID.
+  * **PATCH `/api/courses/{id}`** — Mengubah sebagian atribut Course (misal: `title` atau `is_published`).
+  * **DELETE `/api/courses/{id}`** — Menghapus data Course uji dari database.
+
+  ### 2. Pengujian Kode Status & Penanganan Error (Error Handling)
+  Collection ini dilengkapi dengan bukti pengujian (*saved examples*) untuk berbagai respons HTTP:
+  * **`200 OK`** — Pengambilan/perubahan data berhasil.
+  * **`201 Created`** — Pembuatan resource Course berhasil.
+  * **`204 No Content`** — Penghapusan Course berhasil tanpa isi body.
+  * **`404 Not Found`** — Permintaan Course dengan ID yang tidak terdaftar di database.
+  * **`409 Conflict`** — Percobaan pendaftaran Course dengan `code` yang sudah ada (duplikat).
+  * **`422 Unprocessable Entity`** — Validasi schema gagal (body request tidak lengkap/tanpa `teacher_id`).
