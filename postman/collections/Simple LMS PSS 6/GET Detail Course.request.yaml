@@ -1,0 +1,5 @@
+$kind: http-request
+url: http://localhost:8000/api/courses/3
+method: GET
+examples: .resources/GET Detail Course.resources/examples
+order: 3000

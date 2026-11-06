@@ -1,0 +1,5 @@
+$kind: http-request
+url: http://localhost:8000/api/courses/36
+method: DELETE
+examples: .resources/DELETE Course.resources/examples
+order: 6000

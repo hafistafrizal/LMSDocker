@@ -1,0 +1,14 @@
+$kind: http-request
+url: http://localhost:8000/api/courses/3
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \  \"title\": \"Praktikum REST API Revisi\",\r
+
+    \  \"is_published\": true\r
+
+    }"
+examples: .resources/PATCH Update Course.resources/examples
+order: 4000

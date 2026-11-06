@@ -1,0 +1,20 @@
+$kind: http-request
+url: http://localhost:8000/api/courses
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"code\": \"PSS-API-02\",\r
+
+    \  \"title\": \"Praktikum REST API\",\r
+
+    \  \"description\": \"Materi Django Ninja\",\r
+
+    \  \"is_published\": false,\r
+
+    \  \"created_at\": \"2026-11-06T19:33:31.802Z\"\r
+
+    }"
+examples: .resources/Uji Kasus Error.resources/examples
+order: 5000
