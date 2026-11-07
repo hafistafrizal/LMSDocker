@@ -1,110 +1,82 @@
-# courses/api.py
-from django.contrib.auth import get_user_model
-from django.db import IntegrityError
-from ninja import Router, Status
+from typing import List, Optional
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from ninja import Router
 
-from .models import Course
-from .schemas import CourseIn, CourseOut, CoursePatch, Message
+from accounts.models import User
+from courses.models import Course
+from courses.permissions import require_role
+from courses.schemas import CourseIn, CoursePatchIn, CourseOut
 
 router = Router(tags=["Courses"])
-User = get_user_model()
 
-@router.get("", response=list[CourseOut])
+
+@router.get("", response=List[CourseOut])
 def list_courses(
-    request,
-    q: str | None = None,
-    published: bool | None = None,
+    request, q: Optional[str] = None, is_published: Optional[bool] = None
 ):
-    qs = Course.objects.all().order_by("id")
+    user = request.auth
+    queryset = Course.objects.all()
+
+    # Filter RBAC PSS 7
+    if user.role == User.Role.TEACHER:
+        queryset = queryset.filter(teacher=user)
+    elif user.role == User.Role.STUDENT:
+        queryset = queryset.filter(is_published=True, enrollments__student=user)
+
     if q:
-        qs = qs.filter(title__icontains=q)
-    if published is not None:
-        qs = qs.filter(is_published=published)
-    return qs[:100]
+        queryset = queryset.filter(
+            Q(title__icontains=q) | Q(description__icontains=q)
+        )
+    if is_published is not None:
+        queryset = queryset.filter(is_published=is_published)
 
-@router.get(
-    "/{course_id}",
-    response={200: CourseOut, 404: Message},
-)
+    return queryset
+
+
+@router.get("/{course_id}", response=CourseOut)
 def get_course(request, course_id: int):
-    course = Course.objects.filter(pk=course_id).first()
-    if course is None:
-        return Status(404, {"detail": "Course tidak ditemukan"})
-    return Status(200, course)
+    user = request.auth
+    queryset = Course.objects.all()
 
-@router.post(
-    "",
-    response={201: CourseOut, 400: Message, 409: Message},
-)
+    if user.role == User.Role.TEACHER:
+        queryset = queryset.filter(teacher=user)
+    elif user.role == User.Role.STUDENT:
+        queryset = queryset.filter(is_published=True, enrollments__student=user)
+
+    return get_object_or_404(queryset, pk=course_id)
+
+
+@router.post("", response={201: CourseOut})
 def create_course(request, payload: CourseIn):
-    if not User.objects.filter(pk=payload.teacher_id).exists():
-        return Status(400, {"detail": "teacher_id tidak terdaftar"})
-    if Course.objects.filter(code=payload.code).exists():
-        return Status(409, {"detail": "Kode Course sudah dipakai"})
-    try:
-        course = Course.objects.create(**payload.model_dump())
-    except IntegrityError:
-        return Status(409, {"detail": "Data berbenturan dengan database"})
-    return Status(201, course)
+    require_role(request.auth, User.Role.TEACHER, User.Role.ADMIN)
 
-@router.put(
-    "/{course_id}",
-    response={200: CourseOut, 400: Message,
-              404: Message, 409: Message},
-)
-def replace_course(request, course_id: int, payload: CourseIn):
-    course = Course.objects.filter(pk=course_id).first()
-    if course is None:
-        return Status(404, {"detail": "Course tidak ditemukan"})
-    if not User.objects.filter(pk=payload.teacher_id).exists():
-        return Status(400, {"detail": "teacher_id tidak terdaftar"})
-    if Course.objects.exclude(pk=course_id).filter(
-        code=payload.code
-    ).exists():
-        return Status(409, {"detail": "Kode Course sudah dipakai"})
-    for field, value in payload.model_dump().items():
-        setattr(course, field, value)
-    try:
-        course.save()
-    except IntegrityError:
-        return Status(409, {"detail": "Data berbenturan dengan database"})
-    return Status(200, course)
+    # Pemilik course otomatis diambil dari token autentikasi PSS 7
+    course = Course.objects.create(**payload.model_dump(), teacher=request.auth)
+    return 201, course
 
-@router.patch(
-    "/{course_id}",
-    response={200: CourseOut, 400: Message,
-              404: Message, 409: Message},
-)
-def update_course(request, course_id: int, payload: CoursePatch):
-    course = Course.objects.filter(pk=course_id).first()
-    if course is None:
-        return Status(404, {"detail": "Course tidak ditemukan"})
-    changes = payload.model_dump(exclude_unset=True)
-    if not changes or any(value is None for value in changes.values()):
-        return Status(400, {"detail": "Field update tidak valid"})
-    if "teacher_id" in changes and not User.objects.filter(
-        pk=changes["teacher_id"]
-    ).exists():
-        return Status(400, {"detail": "teacher_id tidak terdaftar"})
-    if "code" in changes and Course.objects.exclude(
-        pk=course_id
-    ).filter(code=changes["code"]).exists():
-        return Status(409, {"detail": "Kode Course sudah dipakai"})
-    for field, value in changes.items():
-        setattr(course, field, value)
-    try:
-        course.save(update_fields=list(changes))
-    except IntegrityError:
-        return Status(409, {"detail": "Data berbenturan dengan database"})
-    return Status(200, course)
 
-@router.delete(
-    "/{course_id}",
-    response={204: None, 404: Message},
-)
+@router.patch("/{course_id}", response=CourseOut)
+def update_course(request, course_id: int, payload: CoursePatchIn):
+    require_role(request.auth, User.Role.TEACHER, User.Role.ADMIN)
+
+    queryset = Course.objects.all()
+    if request.auth.role == User.Role.TEACHER:
+        queryset = queryset.filter(teacher=request.auth)
+
+    course = get_object_or_404(queryset, pk=course_id)
+
+    for attr, value in payload.model_dump(exclude_unset=True).items():
+        setattr(course, attr, value)
+
+    course.save()
+    return course
+
+
+@router.delete("/{course_id}", response={204: None})
 def delete_course(request, course_id: int):
-    course = Course.objects.filter(pk=course_id).first()
-    if course is None:
-        return Status(404, {"detail": "Course tidak ditemukan"})
+    require_role(request.auth, User.Role.ADMIN)
+
+    course = get_object_or_404(Course, pk=course_id)
     course.delete()
-    return Status(204, None)
+    return 204, None

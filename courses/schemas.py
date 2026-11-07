@@ -1,29 +1,30 @@
-# courses/schemas.py
 from datetime import datetime
-from ninja import Schema
+from typing import Optional
+from pydantic import BaseModel, ConfigDict
 
-class CourseIn(Schema):
+
+class CourseIn(BaseModel):
     code: str
     title: str
-    description: str = ""
-    teacher_id: int
+    description: Optional[str] = ""
     is_published: bool = False
 
-class CoursePatch(Schema):
-    code: str | None = None
-    title: str | None = None
-    description: str | None = None
-    teacher_id: int | None = None
-    is_published: bool | None = None
-    
-class CourseOut(Schema):
+
+class CoursePatchIn(BaseModel):
+    code: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    is_published: Optional[bool] = None
+
+
+class CourseOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     code: str
     title: str
     description: str
-    teacher_id: int
     is_published: bool
+    teacher_id: int
     created_at: datetime
-
-class Message(Schema):
-    detail: str
+    updated_at: Optional[datetime] = None
