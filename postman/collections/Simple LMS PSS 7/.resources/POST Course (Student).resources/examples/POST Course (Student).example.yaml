@@ -1,0 +1,36 @@
+$kind: http-example
+request:
+  url: http://localhost:8000/api/courses
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"code\": \"PSS7-LAT-01\",\r
+
+      \  \"title\": \"Keamanan API\",\r
+
+      \  \"description\": \"Pengujian role\",\r
+
+      \  \"is_published\": false\r
+
+      }"
+response:
+  statusCode: 403
+  statusText: Forbidden
+  headers:
+    Date: Sun, 08 Nov 2026 02:34:34 GMT
+    Server: WSGIServer/0.2 CPython/3.12.16
+    Content-Type: application/json; charset=utf-8
+    X-Frame-Options: DENY
+    Content-Length: "53"
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: same-origin
+    Cross-Origin-Opener-Policy: same-origin
+  body:
+    type: json
+    content: |-
+      {
+        "detail": "Anda tidak memiliki izin untuk aksi ini"
+      }
+order: 1000

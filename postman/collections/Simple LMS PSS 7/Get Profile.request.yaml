@@ -1,0 +1,9 @@
+$kind: http-request
+url: http://localhost:8000/api/auth/profile
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_118u}}"
+examples: .resources/Get Profile.resources/examples
+order: 6000

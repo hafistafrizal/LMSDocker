@@ -1,0 +1,28 @@
+$kind: http-example
+name: Logout
+request:
+  url: http://localhost:8000/api/auth/logout
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2IiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3OTQxMDU1MzksIm5iZiI6MTc5NDEwNTUzOSwiZXhwIjoxNzk0NzEwMzM5LCJpc3MiOiJzaW1wbGUtbG1zIiwiYXVkIjoic2ltcGxlLWxtcy1hcGkiLCJqdGkiOiI3MGQ3MzVjYy01MzhkLTRjZWItYjJlMi1hOWFkN2JjZDJiMWMifQ.WA-gH8AFJBZAOyLdbGdP_Jk-gZC-D2Kl1WqFw1MKDPY\"\r
+
+      }"
+response:
+  statusCode: 204
+  statusText: No Content
+  headers:
+    Date: Sun, 08 Nov 2026 02:41:06 GMT
+    Server: WSGIServer/0.2 CPython/3.12.16
+    Content-Type: application/json; charset=utf-8
+    X-Frame-Options: DENY
+    Content-Length: "0"
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: same-origin
+    Cross-Origin-Opener-Policy: same-origin
+  body:
+    type: json
+    content: ""
+order: 2000

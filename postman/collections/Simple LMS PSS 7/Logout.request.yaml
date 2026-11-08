@@ -1,0 +1,16 @@
+$kind: http-request
+url: http://localhost:8000/api/auth/logout
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"refresh\": \"{{json_web_token_0zay}}\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0q06}}"
+examples: .resources/Logout.resources/examples
+order: 5000

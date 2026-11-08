@@ -1,0 +1,56 @@
+$kind: collection
+description: |-
+  # Simple LMS API - Praktikum PSS 7
+
+  Koleksi Postman ini berisi pengujian REST API untuk **Simple LMS** pada Praktikum PSS 7. Fokus utama pada modul ini adalah pengamanan *endpoint* menggunakan **JWT (JSON Web Token) Authentication** dan pembatasan hak akses berbasis peran atau **Role-Based Access Control (RBAC)**.
+
+  ## ⚙️ Base URL
+  `http://localhost:8000`
+
+  ## 🔐 Cara Autentikasi (Bearer Token)
+  Sebagian besar endpoint dalam koleksi ini telah dilindungi dan mewajibkan token.
+  1. Jalankan request `POST /api/auth/token` menggunakan kredensial akun.
+  2. Salin string yang terdapat di dalam field `"access"`.
+  3. Buka tab **Authorization**, pilih tipe **Bearer Token**, lalu *paste* token tersebut.
+
+  ## 👥 Role & Hak Akses (RBAC)
+  Sistem membagi izin pengguna ke dalam 3 Role:
+  * **ADMIN**: Memiliki akses penuh ke seluruh data (termasuk `DELETE` Course).
+  * **TEACHER** (Dosen): Dapat membuat kelas baru (`POST`) dan mengedit (`PATCH`) kelas miliknya sendiri.
+  * **STUDENT** (Mahasiswa): Dibatasi hanya dapat melakukan `GET` pada kelas yang telah berstatus *published* dan terdaftar (enrolled). Mahasiswa akan mendapat pesan **403 Forbidden** jika mencoba mengubah atau membuat kelas.
+
+  ## 📝 Daftar Endpoint
+
+  ### 🔑 Authentication (Akun & Sesi)
+  * `POST /api/auth/token` — Mendapatkan *Access Token* (15 menit) dan *Refresh Token* (7 hari). *(Dilengkapi Rate-Limit Redis 5/m)*
+  * `POST /api/auth/refresh` — Menukar *Refresh Token* lama dengan pasangan token yang baru (Refresh Rotation).
+  * `GET /api/auth/me` — Mengecek identitas pengguna yang sedang login.
+  * `GET /api/auth/profile` — **[Tugas A]** Mengambil profil pengguna (ID, Username, Role).
+  * `POST /api/auth/change-password` — **[Tugas C]** Mengubah password pengguna sekaligus mencabut (*revoke*) semua sesi refresh token lamanya.
+  * `POST /api/auth/logout` — Mencabut *Refresh Token* agar tidak bisa ditukarkan lagi.
+
+  ### 📚 Courses (Mata Kuliah)
+  * `GET /api/courses` — Menampilkan daftar kelas. Hasil yang muncul difilter otomatis berdasarkan siapa yang login.
+  * `POST /api/courses` — Membuat kelas baru. Otomatis menetapkan pembuatnya sebagai *Teacher* pengampu.
+  * `GET /api/courses/{id}` — Melihat detail mata kuliah.
+  * `PATCH /api/courses/{id}` — Mengedit data mata kuliah (Dibatasi hanya untuk pemilik kelas/Admin).
+  * `DELETE /api/courses/{id}` — Menghapus kelas (Eksklusif hak Admin).
+variables:
+  - key: json_web_token_0na4
+    secret: true
+    disabled: false
+  - key: json_web_token_0en0
+    secret: true
+    disabled: false
+  - key: json_web_token_0q06
+    secret: true
+    disabled: false
+  - key: json_web_token_0zay
+    secret: true
+    disabled: false
+  - key: json_web_token_0olq
+    secret: true
+    disabled: false
+  - key: json_web_token_118u
+    secret: true
+    disabled: false

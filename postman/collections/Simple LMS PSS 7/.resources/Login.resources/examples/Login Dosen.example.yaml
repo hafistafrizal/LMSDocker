@@ -1,0 +1,34 @@
+$kind: http-example
+request:
+  url: http://localhost:8000/api/auth/token
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"username\": \"dosen1\",\r
+
+      \  \"password\": \"teacher123\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Date: Sun, 08 Nov 2026 02:26:34 GMT
+    Server: WSGIServer/0.2 CPython/3.12.16
+    Content-Type: application/json; charset=utf-8
+    X-Frame-Options: DENY
+    Content-Length: "657"
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: same-origin
+    Cross-Origin-Opener-Policy: same-origin
+  body:
+    type: json
+    content: |-
+      {
+        "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1IiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc5NDEwNDc5NCwibmJmIjoxNzk0MTA0Nzk0LCJleHAiOjE3OTQxMDU2OTQsImlzcyI6InNpbXBsZS1sbXMiLCJhdWQiOiJzaW1wbGUtbG1zLWFwaSIsImp0aSI6IjZkNDA1ZTVkLWJkNTEtNDhkMC04YzlmLTU1Zjk1MmFiYjMzZCJ9.kDXQrp3Tva1jvwm73Wb0kOTnsUjAFOa5vv3d7OT23nE",
+        "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1IiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3OTQxMDQ3OTQsIm5iZiI6MTc5NDEwNDc5NCwiZXhwIjoxNzk0NzA5NTk0LCJpc3MiOiJzaW1wbGUtbG1zIiwiYXVkIjoic2ltcGxlLWxtcy1hcGkiLCJqdGkiOiIwYzkxNzc4ZS02MDVkLTRlOGYtYTlkNS1hMDgwNzFlY2EwOTgifQ.wEcLOUh6UA1-CrfadrmovbKtp3-4SXNiQ7l4CNU2lnw",
+        "token_type": "bearer"
+      }
+order: 1000

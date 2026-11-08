@@ -1,0 +1,32 @@
+$kind: http-example
+request:
+  url: http://localhost:8000/api/auth/refresh
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2IiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3OTQxMDUxNzEsIm5iZiI6MTc5NDEwNTE3MSwiZXhwIjoxNzk0NzA5OTcxLCJpc3MiOiJzaW1wbGUtbG1zIiwiYXVkIjoic2ltcGxlLWxtcy1hcGkiLCJqdGkiOiIwYzU4OTkwNi0zYzBjLTRhNzQtYjQwNC05NWQ3NmQ3NzViNjEifQ.7HrwO8kNB53IEuJfn5cxD-RBoOfxYWwAf-IssNmLQ1A\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Date: Sun, 08 Nov 2026 02:36:41 GMT
+    Server: WSGIServer/0.2 CPython/3.12.16
+    Content-Type: application/json; charset=utf-8
+    X-Frame-Options: DENY
+    Content-Length: "657"
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: same-origin
+    Cross-Origin-Opener-Policy: same-origin
+  body:
+    type: json
+    content: |-
+      {
+        "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2IiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc5NDEwNTQwMSwibmJmIjoxNzk0MTA1NDAxLCJleHAiOjE3OTQxMDYzMDEsImlzcyI6InNpbXBsZS1sbXMiLCJhdWQiOiJzaW1wbGUtbG1zLWFwaSIsImp0aSI6IjgwOTlhOTU0LTViZjMtNDdiZC04ZDJhLWVkNGEwY2UzZWU2OSJ9.gDgy9BFIdEEroNJEihXuUTZaCZZoMVjAWDn7hP6ti2I",
+        "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2IiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3OTQxMDU0MDEsIm5iZiI6MTc5NDEwNTQwMSwiZXhwIjoxNzk0NzEwMjAxLCJpc3MiOiJzaW1wbGUtbG1zIiwiYXVkIjoic2ltcGxlLWxtcy1hcGkiLCJqdGkiOiIzNTg4ODc3Yy0xNjI5LTRiNmUtYjFkNy05MjMyNzk0ZjRmYjYifQ.SAfP44mCQUOKWx1L4Sx5U-42XBuazTAIyW5v_fKamjA",
+        "token_type": "bearer"
+      }
+order: 1000

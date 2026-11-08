@@ -1,0 +1,9 @@
+$kind: http-request
+url: http://localhost:8000/api/courses
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0na4}}"
+examples: .resources/Get Courses (Teacher).resources/examples
+order: 2000

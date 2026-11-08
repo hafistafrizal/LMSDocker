@@ -1,0 +1,12 @@
+$kind: http-request
+url: http://localhost:8000/api/auth/refresh
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"refresh\": \"{{json_web_token_0olq}}\"\r
+
+    }"
+examples: .resources/Refresh Token.resources/examples
+order: 4000

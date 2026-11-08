@@ -1,0 +1,22 @@
+$kind: http-request
+url: http://localhost:8000/api/courses
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"code\": \"PSS7-LAT-01\",\r
+
+    \  \"title\": \"Keamanan API\",\r
+
+    \  \"description\": \"Pengujian role\",\r
+
+    \  \"is_published\": false\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0en0}}"
+examples: .resources/POST Course (Student).resources/examples
+order: 3000

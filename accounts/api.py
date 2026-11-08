@@ -7,12 +7,10 @@ from ninja.throttling import AnonRateThrottle
 
 from .auth import jwt_auth
 from .models import RefreshSession
-from .schemas import LoginIn, MeOut, RefreshIn, TokenOut
+from .schemas import LoginIn, MeOut, RefreshIn, TokenOut, ProfileOut, ChangePasswordIn
 from .tokens import create_token_pair, decode_token
 
-
 router = Router(tags=["Authentication"], auth=None)
-
 
 @router.post("/token", response=TokenOut, throttle=[AnonRateThrottle("5/m")])
 def obtain_token(request, payload: LoginIn):
@@ -24,7 +22,6 @@ def obtain_token(request, payload: LoginIn):
     if user is None or not user.is_active:
         raise HttpError(401, "Username atau password salah")
     return create_token_pair(user)
-
 
 @router.post("/refresh", response=TokenOut, throttle=[AnonRateThrottle("20/m")])
 def refresh_token(request, payload: RefreshIn):
@@ -47,11 +44,9 @@ def refresh_token(request, payload: RefreshIn):
         session.save(update_fields=["revoked_at"])
         return create_token_pair(user)
 
-
 @router.get("/me", response=MeOut, auth=jwt_auth)
 def who_am_i(request):
     return request.auth
-
 
 @router.post("/logout", response={204: None, 401: dict}, auth=jwt_auth)
 def logout(request, payload: RefreshIn):
@@ -62,3 +57,26 @@ def logout(request, payload: RefreshIn):
         jti=claims["jti"], user=request.auth, revoked_at__isnull=True
     ).update(revoked_at=timezone.now())
     return Status(204, None)
+
+@router.get("/profile", response=ProfileOut, auth=jwt_auth)
+def get_profile(request):
+    return request.auth
+
+@router.post("/change-password", response={200: dict, 400: dict}, auth=jwt_auth)
+def change_password(request, payload: ChangePasswordIn):
+    user = request.auth
+    
+    # 1. Validasi password lama
+    if not user.check_password(payload.old_password):
+        return 400, {"detail": "Password lama salah"}
+    
+    # 2. Ganti dan simpan password baru
+    user.set_password(payload.new_password)
+    user.save()
+    
+    # 3. Keamanan Tambahan: Cabut semua refresh session yang sedang aktif
+    RefreshSession.objects.filter(
+        user=user, revoked_at__isnull=True
+    ).update(revoked_at=timezone.now())
+    
+    return 200, {"detail": "Password berhasil diubah"}

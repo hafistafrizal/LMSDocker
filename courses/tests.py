@@ -87,6 +87,28 @@ class SecurityApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["role"], "TEACHER")
 
+    def test_profile_returns_only_public_identity_fields(self):
+        response = self.request("get", "/api/auth/profile", user=self.teacher)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            {
+                "id": self.teacher.pk,
+                "username": self.teacher.username,
+                "role": self.teacher.role,
+            },
+        )
+
+    def test_profile_requires_valid_access_token(self):
+        self.assertEqual(
+            self.request("get", "/api/auth/profile").status_code, 401
+        )
+        refresh = create_token_pair(self.teacher)["refresh"]
+        self.assertEqual(
+            self.request("get", "/api/auth/profile", token=refresh).status_code,
+            401,
+        )
+
     def test_token_with_wrong_signature_returns_401(self):
         legit = self.access(self.teacher)
         claims = jwt.decode(legit, options={"verify_signature": False})
@@ -202,3 +224,30 @@ class SecurityApiTests(TestCase):
             status_codes.append(response.status_code)
         self.assertEqual(status_codes[:5], [401] * 5)
         self.assertEqual(status_codes[5], 429)
+
+    def test_student_cannot_patch_course(self):
+        # 1. Login sebagai mahasiswa untuk mendapatkan token
+        # Sesuaikan username dan password dengan akun dummy di setUp milikmu
+        login_resp = self.client.post(
+            "/api/auth/token",
+            data={"username": "mhs1", "password": "student123"},
+            content_type="application/json"
+        )
+        self.assertEqual(login_resp.status_code, 200, "Login mahasiswa gagal")
+        token = login_resp.json()["access"]
+
+        # 2. Siapkan header dengan Bearer Token
+        headers = {"HTTP_AUTHORIZATION": f"Bearer {token}"}
+
+        # 3. Lakukan request PATCH ke course (asumsi course ID 1 sudah terbuat di setUp)
+        # Jika di setUp milikmu nama variabelnya self.course, ganti angka 1 dengan self.course.id
+        payload = {"title": "Mencoba ganti judul"}
+        patch_resp = self.client.patch(
+            "/api/courses/1", 
+            data=payload,
+            content_type="application/json",
+            **headers
+        )
+
+        # 4. Pastikan sistem menolak dengan 403 Forbidden
+        self.assertEqual(patch_resp.status_code, 403)
